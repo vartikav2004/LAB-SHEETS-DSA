@@ -1,0 +1,162 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Class for Two-Dimensional Array operations
+class TwoDimensionalArray {
+private:
+    vector<vector<int>> matrix;
+
+public:
+    // Constructor to initialize a matrix with given rows and columns
+    TwoDimensionalArray(int rows, int cols) : matrix(rows, vector<int>(cols, 0)) {}
+
+    // Method to insert a row at the end
+    void insertRow(const vector<int>& row) {
+        matrix.push_back(row);
+    }
+
+    // Method to insert a column at the end
+    void insertColumn(const vector<int>& col) {
+        for (int i = 0; i < col.size(); i++) {
+            if (i < matrix.size()) {
+                matrix[i].push_back(col[i]);
+            }
+        }
+    }
+
+    // Method to delete a row by index
+    void deleteRow(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < matrix.size()) {
+            matrix.erase(matrix.begin() + rowIndex);
+        }
+    }
+
+    // Method to traverse and display the matrix
+    void traverse() const {
+        for (const auto& row : matrix) {
+            for (int val : row) {
+                cout << val << " ";
+            }
+            cout << endl;
+        }
+    }
+
+    // Method to transpose the matrix
+    vector<vector<int>> transposeMatrix() const {
+        int rows = matrix.size();
+        int cols = matrix[0].size();
+        vector<vector<int>> transposed(cols, vector<int>(rows));
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                transposed[j][i] = matrix[i][j];
+            }
+        }
+        return transposed;
+    }
+};
+
+// Class for String Algorithms
+class StringAlgorithms {
+public:
+    // Knuth-Morris-Pratt (KMP) pattern matching algorithm
+    vector<int> computeLPSArray(const string& pattern) {
+        int m = pattern.length();
+        vector<int> lps(m, 0);
+        int len = 0, i = 1;
+
+        while (i < m) {
+            if (pattern[i] == pattern[len]) {
+                len++;
+                lps[i] = len;
+                i++;
+            } else {
+                if (len != 0) {
+                    len = lps[len - 1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+        return lps;
+    }
+
+    // KMP Search Function
+    int KMPSearch(const string& text, const string& pattern) {
+        int n = text.length();
+        int m = pattern.length();
+        vector<int> lps = computeLPSArray(pattern);
+        int i = 0, j = 0;
+
+        while (i < n) {
+            if (pattern[j] == text[i]) {
+                j++;
+                i++;
+            }
+            if (j == m) {
+                return i - j; // pattern found at index (i - j)
+            } else if (i < n && pattern[j] != text[i]) {
+                if (j != 0)
+                    j = lps[j - 1];
+                else
+                    i++;
+            }
+        }
+        return -1; // pattern not found
+    }
+
+    // Run Length Encoding (RLE) string compression
+    string runLengthEncoding(const string& str) {
+        string encoded = "";
+        int n = str.length();
+
+        for (int i = 0; i < n; i++) {
+            int count = 1;
+            while (i < n - 1 && str[i] == str[i + 1]) {
+                count++;
+                i++;
+            }
+            encoded += to_string(count) + str[i];
+        }
+        return encoded;
+    }
+};
+
+// Test cases and demonstration of functionalities
+int main() {
+    // Test 2D Array operations
+    TwoDimensionalArray array(2, 2);
+    array.insertRow({1, 2});
+    array.insertColumn({3, 4});
+    cout << "2D Array after insertions:" << endl;
+    array.traverse();
+
+    array.deleteRow(0);
+    cout << "\n2D Array after deletion of first row:" << endl;
+    array.traverse();
+
+    vector<vector<int>> transposed = array.transposeMatrix();
+    cout << "\nTranspose of the current matrix:" << endl;
+    for (const auto& row : transposed) {
+        for (int val : row) {
+            cout << val << " ";
+        }
+        cout << endl;
+    }
+
+    // Test String Algorithms
+    StringAlgorithms stringAlgo;
+    string text = "abxabcabcaby";
+    string pattern = "abcaby";
+    int index = stringAlgo.KMPSearch(text, pattern);
+    cout << "\nPattern found at index (KMP): " << index << endl;
+
+    string str = "aaabbbcccaaa";
+    string encodedStr = stringAlgo.runLengthEncoding(str);
+    cout << "Run Length Encoding of \"" << str << "\": " << encodedStr << endl;
+
+    return 0;
+}
