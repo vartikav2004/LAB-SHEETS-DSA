@@ -1,0 +1,287 @@
+Code:
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Array-based Stack Implementation
+class ArrayStack {
+private:
+    int *arr;
+    int top;
+    int capacity;
+
+public:
+    ArrayStack(int size) {
+        arr = new int[size];
+        capacity = size;
+        top = -1;
+    }
+
+    void push(int x) {
+        if (top == capacity - 1) {
+            cout << "Stack Overflow\n";
+            return;
+        }
+        arr[++top] = x;
+    }
+
+    int pop() {
+        if (isEmpty()) {
+            cout << "Stack Underflow\n";
+            return -1;
+        }
+        return arr[top--];
+    }
+
+    int peek() {
+        if (isEmpty()) {
+            cout << "Stack is empty\n";
+            return -1;
+        }
+        return arr[top];
+    }
+
+    bool isEmpty() {
+        return top == -1;
+    }
+
+    ~ArrayStack() {
+        delete[] arr;
+    }
+};
+
+// Linked List-based Stack Implementation
+struct Node {
+    int data;
+    Node* next;
+};
+
+class LinkedListStack {
+private:
+    Node* head;
+
+public:
+    LinkedListStack() {
+        head = nullptr;
+    }
+
+    void push(int x) {
+        Node* newNode = new Node();
+        newNode->data = x;
+        newNode->next = head;
+        head = newNode;
+    }
+
+    int pop() {
+        if (isEmpty()) {
+            cout << "Stack Underflow\n";
+            return -1;
+        }
+        Node* temp = head;
+        int poppedValue = head->data;
+        head = head->next;
+        delete temp;
+        return poppedValue;
+    }
+
+    int peek() {
+        if (isEmpty()) {
+            cout << "Stack is empty\n";
+            return -1;
+        }
+        return head->data;
+    }
+
+    bool isEmpty() {
+        return head == nullptr;
+    }
+};
+
+// Array-based Queue Implementation
+class ArrayQueue {
+private:
+    int *arr;
+    int front, rear, capacity;
+
+public:
+    ArrayQueue(int size) {
+        arr = new int[size];
+        capacity = size;
+        front = 0;
+        rear = -1;
+    }
+
+    void enqueue(int x) {
+        if (rear == capacity - 1) {
+            cout << "Queue Overflow\n";
+            return;
+        }
+        arr[++rear] = x;
+    }
+
+    int dequeue() {
+        if (isEmpty()) {
+            cout << "Queue Underflow\n";
+            return -1;
+        }
+        return arr[front++];
+    }
+
+    int peek() {
+        if (isEmpty()) {
+            cout << "Queue is empty\n";
+            return -1;
+        }
+        return arr[front];
+    }
+
+    bool isEmpty() {
+        return front > rear;
+    }
+
+    ~ArrayQueue() {
+        delete[] arr;
+    }
+};
+
+// Linked List-based Queue Implementation
+class LinkedListQueue {
+private:
+    struct QNode {
+        int data;
+        QNode* next;
+    };
+
+    QNode* front;
+    QNode* rear;
+
+public:
+    LinkedListQueue() {
+        front = rear = nullptr;
+    }
+
+    void enqueue(int x) {
+        QNode* newNode = new QNode();
+        newNode->data = x;
+        newNode->next = nullptr;
+
+        if (rear == nullptr) {
+            front = rear = newNode;
+            return;
+        }
+        rear->next = newNode;
+        rear = newNode;
+    }
+
+    int dequeue() {
+        if (isEmpty()) {
+            cout << "Queue Underflow\n";
+            return -1;
+        }
+        QNode* temp = front;
+        int data = front->data;
+        front = front->next;
+        if (front == nullptr)
+            rear = nullptr;
+        delete temp;
+        return data;
+    }
+
+    int peek() {
+        if (isEmpty()) {
+            cout << "Queue is empty\n";
+            return -1;
+        }
+        return front->data;
+    }
+
+    bool isEmpty() {
+        return front == nullptr;
+    }
+};
+
+// Reversing a String using Stack
+string reverseString(const string &str) {
+    ArrayStack stack(str.length());
+    for (char ch : str)
+        stack.push(ch);
+
+    string reversed = "";
+    while (!stack.isEmpty())
+        reversed += stack.pop();
+
+    return reversed;
+}
+
+// Simulating a System Stack for Function Calls
+void functionA();
+void functionB();
+void functionC();
+
+void systemStackSimulation() {
+    LinkedListStack stack;
+    stack.push(1);  // Function A
+    cout << "Function A called\n";
+
+    stack.push(2);  // Function B
+    cout << "Function B called\n";
+
+    stack.push(3);  // Function C
+    cout << "Function C called\n";
+
+    while (!stack.isEmpty()) {
+        int func = stack.pop();
+        if (func == 1) cout << "Function A returned\n";
+        else if (func == 2) cout << "Function B returned\n";
+        else if (func == 3) cout << "Function C returned\n";
+    }
+}
+
+// Print Queue Simulation
+class PrintQueue {
+private:
+    LinkedListQueue queue;
+
+public:
+    void addDocument(int docID) {
+        cout << "Document " << docID << " added to the print queue\n";
+        queue.enqueue(docID);
+    }
+
+    void processDocuments() {
+        while (!queue.isEmpty()) {
+            cout << "Printing document " << queue.dequeue() << "\n";
+        }
+    }
+};
+
+int main() {
+    // Testing Stack and Queue Implementations
+    ArrayStack stack(5);
+    stack.push(10);
+    stack.push(20);
+    cout << "Top of stack: " << stack.peek() << endl;
+    cout << "Popped from stack: " << stack.pop() << endl;
+
+    ArrayQueue queue(5);
+    queue.enqueue(30);
+    queue.enqueue(40);
+    cout << "Front of queue: " << queue.peek() << endl;
+    cout << "Dequeued from queue: " << queue.dequeue() << endl;
+
+    // Reversing a String
+    string str = "OpenAI";
+    cout << "Original string: " << str << endl;
+    cout << "Reversed string: " << reverseString(str) << endl;
+
+    // System Stack Simulation
+    systemStackSimulation();
+
+    // Print Queue Simulation
+    PrintQueue printQueue;
+    printQueue.addDocument(101);
+    printQueue.addDocument(102);
+    printQueue.processDocuments();
+
+    return 0;
+}
